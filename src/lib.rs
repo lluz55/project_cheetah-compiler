@@ -1,15 +1,20 @@
 #![allow(dead_code)]
 mod lexer;
 mod tokens;
+mod parser;
+mod ast;
 
 #[cfg(test)]
 mod tests {
 
   use lexer::Lexer;
+  use parser::Parser;
+  // use tokens::LexerToken;
+  use ast::{Stmt, AstType};
   use super::*;
 
   #[test]
-  fn parse_lexer() {
+  fn parse_lexer(){
     static CONTENT: &'static str = r#"$@Name { 
       *height: $parent.width
       !value:   "empty"
@@ -48,5 +53,23 @@ mod tests {
     assert_eq!(tokens[25].value, "|");
     assert_eq!(tokens[26].value, "}");
         
+  }
+
+  #[test]
+  fn parse_parser() {
+    static CONTENT: &'static str = r#"$@Name { 
+      *height: $parent.width
+      !value:   "empty"
+      onClick: (ev) {}
+    }"#;
+
+
+    let mut lexer = Lexer::new(CONTENT);
+    let tokens = lexer.cellectt_tokens();
+
+    let mut parser = Parser::new(tokens);
+    let mut global = Stmt::new(AstType::GLOBALSCOPE);
+
+    parser.parse_tokens(&mut global);
   }
 }
