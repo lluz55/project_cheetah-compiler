@@ -118,10 +118,6 @@ impl Lexer {
     self.add_token(TokenType::COMMENT, "#".to_string())
   }
 
-  fn has_next_char(&mut self) -> bool {
-    todo!()
-  }
-
   fn collect_string(&mut self) {
     self.advance();
     let mut value = String::from("");
@@ -200,11 +196,4 @@ impl Lexer {
     self.add_token(TokenType::NUMBER, value);
   }
 
-  fn retreat(&mut self) {
-
-  }
-
-  fn clean(&mut self) {
-
-  }   
 }
