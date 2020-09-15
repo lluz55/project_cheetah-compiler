@@ -1,38 +1,46 @@
 # MDL
-```ruby
 
+## Language objectives
+- Use components for compose user interface
+- Acessible from native code using bridge
+- Like typescript when using functions
+- Primarly functional
+- Data oriented
+- Reactive
+
+```ruby
 #main.mdl
+
+import { MyComp } from "./mycomp"
+
 App {
-  body: FlexLayout {
-    direction: column
-    alignItens: center
+  body: Column {
+    justifyContent: center
     children: [
       Text {
-        id: inc
+        id: "inc"
         data: { val = 0 }
         text: "Value is ${val}"
       },
       SizedBox { height: 30 },
       MyComp {
         extern_name: "My component"
+        onExported_event: (ev: mouseEvent) => {
+          debug("I'm event from MyComp")
+        }
       },
       SizedBox { height: 30 }, 
       Button {
         text: "Increment"
         onClick: (ev) {
-          val++
-        }
-      },
-      Button {
-        text: "Add Item"
-        onClick: (ev: mouseEvent) {
-          
+          @inc.val++
         }
       }
     ]
   }
 }
 ```
+
 #MyComp.mdl
 ```typescript
 function get_itens_count(items: number[]): number {
@@ -58,23 +66,28 @@ function get_items(items: number[]): Component[] {
 }
 ```
 
-
 ```ruby
 export MyComp {
-  props: { extern_name: string }
+  props: { extern_name: string, onExported_event: Function(ev: mouseEvent) }
   define: {
     Column {
       children: [
         Text {
           id: "items_count"
-          text: "Name from outside ${props.extern_name}. Count: $[get_itens_count()}"
+          text: "Name from outside ${props.extern_name}. Count: ${get_itens_count()}"
         },
         List {
-          onUpdate: (ev: ctx) => {
+          onUpdate: (ev: context) => {
             @items_count.update()
           }
           data: {items: number[]}
           items: get_items()
+        },
+        Button {
+          text: "click to fire event"
+          onClick: (ev: mouseEvent) => {
+            exported_event(ev)
+          }
         }
       ]
     }
